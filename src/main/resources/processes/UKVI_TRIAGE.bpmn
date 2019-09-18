@@ -21,9 +21,8 @@
     <bpmn:sequenceFlow id="FromStart_ToInitial" sourceRef="UKVI_TRIAGE_START" targetRef="ServiceTask_1yb3l0z" />
     <bpmn:endEvent id="UKVI_TRIAGE_END" name="End Stage">
       <bpmn:incoming>SequenceFlow_0ontnj0</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_14scqn7</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_1yjy0nk</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0wgy2rq</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0rmiqr5</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_008in3e" sourceRef="ExclusiveGateway_1tlo418" targetRef="ExclusiveGateway_0a9ezdl">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${valid == true}</bpmn:conditionExpression>
@@ -130,7 +129,7 @@
       <bpmn:incoming>SequenceFlow_06hqdx6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_14scqn7</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_14scqn7" sourceRef="ServiceTask_18k0c0b" targetRef="UKVI_TRIAGE_END" />
+    <bpmn:sequenceFlow id="SequenceFlow_14scqn7" sourceRef="ServiceTask_18k0c0b" targetRef="ServiceTask_1ynneml" />
     <bpmn:serviceTask id="ServiceTask_04fl3jg" name="Transfer To Draft Confirmation" camunda:expression="UKVI_DRAFT_TRANSFER_CONFIRMATION" camunda:resultVariable="screen">
       <bpmn:incoming>SequenceFlow_12026vx</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1wv4fj3</bpmn:incoming>
@@ -150,7 +149,7 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1voiphh" sourceRef="ServiceTask_04fl3jg" targetRef="UserTask_0zy8sgb" />
     <bpmn:sequenceFlow id="SequenceFlow_1twv0en" sourceRef="UserTask_0zy8sgb" targetRef="ExclusiveGateway_1qwozw1" />
-    <bpmn:sequenceFlow id="SequenceFlow_1yjy0nk" sourceRef="ExclusiveGateway_1qwozw1" targetRef="UKVI_TRIAGE_END">
+    <bpmn:sequenceFlow id="SequenceFlow_1yjy0nk" sourceRef="ExclusiveGateway_1qwozw1" targetRef="ServiceTask_1ynneml">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${valid == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:serviceTask id="ServiceTask_1yb3l0z" name="Has Required Contribution Decision" camunda:expression="UKVI_HAS_REQUIRED_CONTRIBUTION_DECISION" camunda:resultVariable="screen">
@@ -213,6 +212,12 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_01obu01" sourceRef="ServiceTask_0h6c86h" targetRef="UserTask_0wccui3" />
     <bpmn:sequenceFlow id="SequenceFlow_0wgy2rq" sourceRef="ServiceTask_122topn" targetRef="UKVI_TRIAGE_END" />
+    <bpmn:serviceTask id="ServiceTask_1ynneml" name="Update Team Allocation" camunda:expression="${bpmnService.updateTeamForRegionAndStage(execution.getVariable(&#34;CaseUUID&#34;),execution.processBusinessKey, execution.getVariable(&#34;RegionUUID&#34;), &#34;UKVI_DRAFT&#34;, &#34;DraTeamUUID&#34;,&#34;DraTeamName&#34;)}">
+      <bpmn:incoming>SequenceFlow_14scqn7</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1yjy0nk</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0rmiqr5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0rmiqr5" sourceRef="ServiceTask_1ynneml" targetRef="UKVI_TRIAGE_END" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="UKVI_TRIAGE">
@@ -394,7 +399,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_06hqdx6_di" bpmnElement="SequenceFlow_06hqdx6">
         <di:waypoint x="2854" y="556" />
-        <di:waypoint x="3068" y="556" />
+        <di:waypoint x="2946" y="556" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1wv4fj3_di" bpmnElement="SequenceFlow_1wv4fj3">
         <di:waypoint x="2365" y="367" />
@@ -405,11 +410,11 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_18k0c0b_di" bpmnElement="ServiceTask_18k0c0b">
-        <dc:Bounds x="3068" y="516" width="100" height="80" />
+        <dc:Bounds x="2946" y="516" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_14scqn7_di" bpmnElement="SequenceFlow_14scqn7">
-        <di:waypoint x="3168" y="556" />
-        <di:waypoint x="3419" y="556" />
+        <di:waypoint x="3046" y="556" />
+        <di:waypoint x="3187" y="556" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_04fl3jg_di" bpmnElement="ServiceTask_04fl3jg">
         <dc:Bounds x="2533" y="41" width="100" height="80" />
@@ -436,8 +441,8 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1yjy0nk_di" bpmnElement="SequenceFlow_1yjy0nk">
         <di:waypoint x="2854" y="171" />
-        <di:waypoint x="3437" y="171" />
-        <di:waypoint x="3437" y="538" />
+        <di:waypoint x="3237" y="171" />
+        <di:waypoint x="3237" y="516" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1yb3l0z_di" bpmnElement="ServiceTask_1yb3l0z">
         <dc:Bounds x="346" y="94" width="100" height="80" />
@@ -521,6 +526,13 @@
         <di:waypoint x="2188" y="1073" />
         <di:waypoint x="3437" y="1073" />
         <di:waypoint x="3437" y="574" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1ynneml_di" bpmnElement="ServiceTask_1ynneml">
+        <dc:Bounds x="3187" y="516" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0rmiqr5_di" bpmnElement="SequenceFlow_0rmiqr5">
+        <di:waypoint x="3287" y="556" />
+        <di:waypoint x="3419" y="556" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -24,6 +24,7 @@
         <camunda:in sourceExpression="${execution.processBusinessKey}" target="CaseUUID" />
         <camunda:out source="MarkupDecision" target="MarkupDecision" />
         <camunda:out source="TriTeamUUID" target="TriTeamUUID" />
+        <camunda:out source="RegionUUID" target="RegionUUID" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1pepep6</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0bidbus</bpmn:incoming>
@@ -43,7 +44,7 @@
         <camunda:out sourceExpression="${execution.getVariable(DispatchDecision) == &#34;REJECT&#34; ?  &#34;DISPATCH_REJECT&#34; : &#34;ALLOCATE_TEAM&#34;}" target="EmailType" />
         <camunda:in sourceExpression="${execution.processBusinessKey}" target="CaseUUID" />
       </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_0il8kk0</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0h0s8yy</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1p4ijz3</bpmn:outgoing>
     </bpmn:callActivity>
     <bpmn:sequenceFlow id="SequenceFlow_1p4ijz3" sourceRef="CallActivity_1rowgu5" targetRef="Task_0aiawho" />
@@ -134,6 +135,8 @@
         <camunda:out source="execution.getVariable(&#39;PrivateOfficeOverridePOTeamUUID&#39;)==null?null:execution.getVariable(&#39;PrivateOfficeOverridePOTeamUUID&#39;)}" target="PrivateOfficeOverridePOTeamUUID" />
         <camunda:in source="TriTeamUUID" target="AllocationTeamUUID" />
         <camunda:out source="HasRequiredContributionToContinueDecision" target="HasRequiredContributionToContinueDecision" />
+        <camunda:out source="DraTeamUUID" target="DraTeamUUID" />
+        <camunda:in source="RegionUUID" target="RegionUUID" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1m3tcv0</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0eajg0c</bpmn:incoming>
@@ -145,7 +148,7 @@
       <bpmn:outgoing>SequenceFlow_0il8kk0</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_1lhpo6w</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0il8kk0" name="Accept" sourceRef="ExclusiveGateway_0gvj1w1" targetRef="CallActivity_1rowgu5">
+    <bpmn:sequenceFlow id="SequenceFlow_0il8kk0" name="Accept" sourceRef="ExclusiveGateway_0gvj1w1" targetRef="CallActivity_108hez4">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${TriageDecision == "ACCEPT"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1lhpo6w" name="Reject" sourceRef="ExclusiveGateway_0gvj1w1" targetRef="CallActivity_0sc1113">
@@ -162,6 +165,26 @@
     <bpmn:sequenceFlow id="SequenceFlow_0eajg0c" name="Reject" sourceRef="ExclusiveGateway_09jr7ge" targetRef="CallActivity_1e4wrpc">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${HasRequiredContributionToContinueDecision == "REJECT"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0h0s8yy" sourceRef="CallActivity_108hez4" targetRef="CallActivity_1rowgu5" />
+    <bpmn:callActivity id="CallActivity_108hez4" name="Draft" calledElement="STAGE">
+      <bpmn:extensionElements>
+        <camunda:in source="DraftUUID" target="StageUUID" />
+        <camunda:in sourceExpression="UKVI_DRAFT" target="StageWorkFlow" />
+        <camunda:out source="InitialTriageDecision" target="TriageDecision" />
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out source="StageUUID" target="DraftUUID" />
+        <camunda:in sourceExpression="UKVI_DRAFT" target="StageType" />
+        <camunda:out sourceExpression="${execution.getVariable(HasRequiredContributionToContinueDecision) == &#34;ACCEPT&#34; &#38;&#38; execution.getVariable(InitialTriageDecision) == &#34;REJECT&#34; ?  &#34;TRIAGE_REJECT&#34; : &#34;ALLOCATE_TEAM&#34;}" target="EmailType" />
+        <camunda:in sourceExpression="${execution.processBusinessKey}" target="CaseUUID" />
+        <camunda:out source="execution.getVariable(&#39;PrivateOfficeOverridePOTeamUUID&#39;)==null?null:execution.getVariable(&#39;PrivateOfficeOverridePOTeamUUID&#39;)}" target="PrivateOfficeOverridePOTeamUUID" />
+        <camunda:in source="DraTeamUUID" target="AllocationTeamUUID" />
+        <camunda:out source="HasRequiredContributionToContinueDecision" target="HasRequiredContributionToContinueDecision" />
+        <camunda:in source="RegionUUID" target="RegionUUID" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0il8kk0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0h0s8yy</bpmn:outgoing>
+    </bpmn:callActivity>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="UKVI">
@@ -172,9 +195,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1y4bj2w_di" bpmnElement="UKVI_END">
-        <dc:Bounds x="1959" y="234" width="36" height="36" />
+        <dc:Bounds x="2334" y="234" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2004" y="245" width="49" height="14" />
+          <dc:Bounds x="2379" y="245" width="49" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1pepep6_di" bpmnElement="SequenceFlow_1pepep6">
@@ -188,21 +211,21 @@
         <dc:Bounds x="297" y="212" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CallActivity_1rowgu5_di" bpmnElement="CallActivity_1rowgu5">
-        <dc:Bounds x="1455" y="212" width="100" height="80" />
+        <dc:Bounds x="1830" y="212" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1p4ijz3_di" bpmnElement="SequenceFlow_1p4ijz3">
-        <di:waypoint x="1555" y="252" />
-        <di:waypoint x="1719" y="252" />
+        <di:waypoint x="1930" y="252" />
+        <di:waypoint x="2094" y="252" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="4314" y="595" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1icgcnx_di" bpmnElement="Task_0aiawho">
-        <dc:Bounds x="1719" y="212" width="100" height="80" />
+        <dc:Bounds x="2094" y="212" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0b8hmwm_di" bpmnElement="SequenceFlow_0b8hmwm">
-        <di:waypoint x="1819" y="252" />
-        <di:waypoint x="1959" y="252" />
+        <di:waypoint x="2194" y="252" />
+        <di:waypoint x="2334" y="252" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1dnbjnh_di" bpmnElement="SequenceFlow_1dnbjnh">
         <di:waypoint x="397" y="252" />
@@ -272,18 +295,18 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_14c0dsh_di" bpmnElement="SequenceFlow_14c0dsh">
         <di:waypoint x="586" y="643" />
-        <di:waypoint x="1977" y="643" />
-        <di:waypoint x="1977" y="270" />
+        <di:waypoint x="2352" y="643" />
+        <di:waypoint x="2352" y="270" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="632" y="624" width="34" height="14" />
+          <dc:Bounds x="649" y="624" width="34" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0lke0v5_di" bpmnElement="SequenceFlow_0lke0v5">
         <di:waypoint x="824" y="718" />
-        <di:waypoint x="1977" y="718" />
-        <di:waypoint x="1977" y="270" />
+        <di:waypoint x="2352" y="718" />
+        <di:waypoint x="2352" y="270" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="873" y="696" width="34" height="14" />
+          <dc:Bounds x="894" y="696" width="34" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="CallActivity_1e4wrpc_di" bpmnElement="CallActivity_1e4wrpc">
@@ -298,9 +321,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0il8kk0_di" bpmnElement="SequenceFlow_0il8kk0">
         <di:waypoint x="1377" y="252" />
-        <di:waypoint x="1455" y="252" />
+        <di:waypoint x="1530" y="252" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1399" y="234" width="34" height="14" />
+          <dc:Bounds x="1386" y="234" width="34" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1lhpo6w_di" bpmnElement="SequenceFlow_1lhpo6w">
@@ -309,7 +332,7 @@
         <di:waypoint x="347" y="81" />
         <di:waypoint x="347" y="212" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1585" y="181" width="32" height="14" />
+          <dc:Bounds x="1357" y="206" width="32" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_09jr7ge_di" bpmnElement="ExclusiveGateway_09jr7ge" isMarkerVisible="true">
@@ -334,6 +357,13 @@
           <dc:Bounds x="1179" y="190" width="32" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0h0s8yy_di" bpmnElement="SequenceFlow_0h0s8yy">
+        <di:waypoint x="1630" y="252" />
+        <di:waypoint x="1830" y="252" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="CallActivity_1bi0xic_di" bpmnElement="CallActivity_108hez4">
+        <dc:Bounds x="1530" y="212" width="100" height="80" />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

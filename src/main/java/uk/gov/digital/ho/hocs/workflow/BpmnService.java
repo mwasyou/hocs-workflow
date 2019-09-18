@@ -105,30 +105,30 @@ public class BpmnService {
         caseworkClient.updatePrimaryTopic(caseUUID, stageUUID, topicUUID);
     }
 
-    public void updateTeamsForPrimaryTopic(String caseUUIDString, String stageUUIDString, String topicUUIDString, String stageType, String teamNameKey, String teamUUIDKey) {
+    public void updateTeamsForPrimaryTopic(String caseUUIDString, String stageUUIDString, String topicUUIDString, String stageType, String teamUUIDKey, String teamNameKey) {
         UUID caseUUID = UUID.fromString(caseUUIDString);
         UUID stageUUID = UUID.fromString(stageUUIDString);
         UUID topicUUID = UUID.fromString(topicUUIDString);
 
         Map<String, String> teamsForTopic = new HashMap<>();
         TeamDto teamDto = infoClient.getTeamForTopicAndStage(caseUUID, topicUUID, stageType);
-        teamsForTopic.put(teamNameKey, teamDto.getUuid().toString());
-        teamsForTopic.put(teamUUIDKey, teamDto.getDisplayName());
+        teamsForTopic.put(teamUUIDKey, teamDto.getUuid().toString());
+        teamsForTopic.put(teamNameKey, teamDto.getDisplayName());
         camundaClient.updateTask(stageUUID, teamsForTopic);
         caseworkClient.updateCase(caseUUID, stageUUID, teamsForTopic);
 
         log.debug("######## Updated Primary Topic ########");
     }
 
-    public void updateTeamForRegionAndStage(String caseUUIDString, String stageUUIDString, String regionUUIDString, String stageType, String teamNameKey, String teamUUIDKey) {
+    public void updateTeamForRegionAndStage(String caseUUIDString, String stageUUIDString, String regionUUIDString, String stageType, String teamUUIDKey, String teamNameKey) {
         UUID caseUUID = UUID.fromString(caseUUIDString);
         UUID stageUUID = UUID.fromString(stageUUIDString);
-        UUID regionUUID = UUID.fromString(regionUUIDString);
+        UUID regionUUID = regionUUIDString != null ? UUID.fromString(regionUUIDString) : caseworkClient.getRegionForCase(caseUUID);
 
         Map<String, String> data = new HashMap<>();
         TeamDto teamDto = infoClient.getTeamForRegionAndStage(caseUUID, regionUUID, stageType);
-        data.put(teamNameKey, teamDto.getUuid().toString());
-        data.put(teamUUIDKey, teamDto.getDisplayName());
+        data.put(teamUUIDKey, teamDto.getUuid().toString());
+        data.put(teamNameKey, teamDto.getDisplayName());
 
         camundaClient.updateTask(stageUUID, data);
         caseworkClient.updateCase(caseUUID, stageUUID, data);
